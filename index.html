@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Realm Sign-Up</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e12;
+    --surface: #17171e;
+    --surface2: #1e1e28;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.16);
+    --text: #e8e6f0;
+    --muted: #7a7890;
+    --accent: #c9a84c;
+    --accent-dim: rgba(201,168,76,0.12);
+    --accent-dim2: rgba(201,168,76,0.22);
+    --danger: #e05555;
+    --danger-dim: rgba(224,85,85,0.12);
+    --success: #4caf7d;
+    --success-dim: rgba(76,175,125,0.12);
+    --taken: #3a3848;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    gap: 0;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .tab:hover:not(.active) { color: var(--text); }
+
+  .field { margin-bottom: 1.25rem; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .field input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--muted); }
+  .field input[type="number"] { width: 120px; }
+  .field input[type="tel"] { width: 240px; }
+
+  .optional {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  .god-section-label {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .god-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .god-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text);
+    user-select: none;
+  }
+
+  .god-card:hover:not(.taken) {
+    border-color: var(--border-hover);
+    background: var(--surface2);
+  }
+
+  .god-card.selected {
+    border-color: var(--accent);
+    background: var(--accent-dim2);
+    color: var(--accent);
+  }
+
+  .god-card.taken {
+    opacity: 0.35;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    background: var(--taken);
+  }
+
+  .god-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--border-hover);
+    transition: background 0.15s;
+  }
+
+  .god-card.selected .god-dot { background: var(--accent); }
+  .god-card.taken .god-dot { background: var(--danger); }
+
+  .btn {
+    display: inline-block;
+    padding: 11px 28px;
+    background: var(--accent);
+    color: #0e0e12;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn:hover { opacity: 0.88; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-danger {
+    background: none;
+    color: var(--danger);
+    border: 1px solid rgba(224,85,85,0.3);
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .btn-danger:hover { background: var(--danger-dim); opacity: 1; }
+
+  .btn-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+    background: none;
+    color: var(--danger);
+    border: 1px solid rgba(224,85,85,0.3);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    font-weight: 500;
+  }
+
+  .btn-sm:hover { background: var(--danger-dim); }
+
+  .alert {
+    padding: 11px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    margin-bottom: 1.25rem;
+  }
+
+  .alert-success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,175,125,0.2); }
+  .alert-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(224,85,85,0.2); }
+
+  .admin-lock {
+    max-width: 320px;
+  }
+
+  .entry-list { margin-top: 0.5rem; }
+
+  .entry-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .entry-row:last-child { border-bottom: none; }
+
+  .entry-info { display: flex; flex-direction: column; gap: 2px; }
+
+  .entry-name {
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .entry-meta {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .entry-god {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .count-badge {
+    font-size: 12px;
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 3rem 0;
+  }
+
+  .loading {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 480px) {
+    .page { padding: 2rem 1rem 3rem; }
+    .header h1 { font-size: 1.6rem; }
+    .god-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>⚡ Realm Sign-Up</h1>
+    <p>Claim your god. First come, first served.</p>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('signup')" id="tab-signup">Sign up</button>
+    <button class="tab" onclick="showTab('admin')" id="tab-admin">🔒 Admin</button>
+  </div>
+
+  <div id="pane-signup">
+    <div id="alert-area"></div>
+    <div class="field">
+      <label>Gamertag <span style="color:var(--danger)">*</span></label>
+      <input type="text" id="gamertag" placeholder="YourGamertag" maxlength="50">
+    </div>
+    <div class="field">
+      <label>Age <span style="color:var(--danger)">*</span></label>
+      <input type="number" id="age" placeholder="e.g. 17" min="1" max="99">
+    </div>
+    <div class="field">
+      <label>Phone number <span class="optional">(optional)</span></label>
+      <input type="tel" id="phone" placeholder="e.g. 555-867-5309">
+    </div>
+    <div class="god-section-label">Choose your god <span style="color:var(--danger)">*</span></div>
+    <div class="god-grid" id="god-grid">
+      <div class="loading">Loading gods...</div>
+    </div>
+    <button class="btn" onclick="submitSignup()" id="submit-btn">Join the Realm</button>
+  </div>
+
+  <div id="pane-admin" style="display:none;">
+    <div id="admin-locked" class="admin-lock">
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="pw-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkPassword()">
+      </div>
+      <button class="btn" onclick="checkPassword()">Unlock</button>
+      <div id="pw-error" style="margin-top:10px; font-size:13px; color:var(--danger); display:none;">Wrong password.</div>
+    </div>
+    <div id="admin-panel" style="display:none;">
+      <div class="admin-header">
+        <span class="count-badge"><span id="count">0</span> signups</span>
+        <button class="btn-danger" onclick="clearAll()">Clear all</button>
+      </div>
+      <div id="entries-list" class="entry-list"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZPyA18fZ1kHtUreQz31lIQ3462xhWUDI",
+    authDomain: "realm-signup-name.firebaseapp.com",
+    projectId: "realm-signup-name",
+    storageBucket: "realm-signup-name.firebasestorage.app",
+    messagingSenderId: "689833641220",
+    appId: "1:689833641220:web:fdd5d8285d7275b6277c51"
+  };
+
+  const ADMIN_PASSWORD = 'Redpirate427';
+  const GODS = ['Zeus','Hera','Poseidon','Demeter','Athena','Apollo','Artemis','Ares','Aphrodite','Hephaestus','Hermes','Dionysus','Hades'];
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const signupsCol = collection(db, 'signups');
+
+  let signups = [];
+  let selectedGod = null;
+  let adminUnlocked = false;
+
+  onSnapshot(signupsCol, (snapshot) => {
+    signups = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderGods();
+    if (adminUnlocked) renderAdminPanel();
+  });
+
+  function takenGods() { return signups.map(s => s.god); }
+
+  function renderGods() {
+    const taken = takenGods();
+    const grid = document.getElementById('god-grid');
+    grid.innerHTML = GODS.map(g => {
+      const isTaken = taken.includes(g);
+      const isSelected = g === selectedGod;
+      let cls = 'god-card';
+      if (isTaken) cls += ' taken';
+      else if (isSelected) cls += ' selected';
+      return `<div class="${cls}" onclick="window._selectGod('${g}')"><span class="god-dot"></span>${g}</div>`;
+    }).join('');
+  }
+
+  window._selectGod = function(god) {
+    if (takenGods().includes(god)) return;
+    selectedGod = (selectedGod === god) ? null : god;
+    renderGods();
+  };
+
+  window.submitSignup = async function() {
+    const gamertag = document.getElementById('gamertag').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const btn = document.getElementById('submit-btn');
+
+    if (!gamertag) { showAlert('danger', 'Please enter your gamertag.'); return; }
+    if (!age || isNaN(age) || +age < 1) { showAlert('danger', 'Please enter a valid age.'); return; }
+    if (!selectedGod) { showAlert('danger', 'Please choose a god.'); return; }
+    if (takenGods().includes(selectedGod)) { showAlert('danger', 'That god was just taken! Pick another.'); selectedGod = null; renderGods(); return; }
+
+    const existing = await getDocs(query(signupsCol, where('gamertag_lower', '==', gamertag.toLowerCase())));
+    if (!existing.empty) { showAlert('danger', 'That gamertag is already signed up.'); return; }
+
+    btn.disabled = true;
+    try {
+      await addDoc(signupsCol, {
+        gamertag,
+        gamertag_lower: gamertag.toLowerCase(),
+        age: +age,
+        phone: phone || null,
+        god: selectedGod,
+        ts: Date.now()
+      });
+      const claimedGod = selectedGod;
+      selectedGod = null;
+      document.getElementById('gamertag').value = '';
+      document.getElementById('age').value = '';
+      document.getElementById('phone').value = '';
+      showAlert('success', `Welcome to the Realm, ${gamertag}! You claimed ${claimedGod}.`);
+    } catch(e) {
+      showAlert('danger', 'Something went wrong. Please try again.');
+    }
+    btn.disabled = false;
+  };
+
+  function showAlert(type, msg) {
+    const el = document.getElementById('alert-area');
+    el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    setTimeout(() => { el.innerHTML = ''; }, 5000);
+  }
+
+  window.showTab = function(tab) {
+    document.getElementById('pane-signup').style.display = tab === 'signup' ? '' : 'none';
+    document.getElementById('pane-admin').style.display = tab === 'admin' ? '' : 'none';
+    document.getElementById('tab-signup').className = 'tab' + (tab === 'signup' ? ' active' : '');
+    document.getElementById('tab-admin').className = 'tab' + (tab === 'admin' ? ' active' : '');
+  };
+
+  window.checkPassword = function() {
+    const val = document.getElementById('pw-input').value;
+    if (val === ADMIN_PASSWORD) {
+      adminUnlocked = true;
+      document.getElementById('admin-locked').style.display = 'none';
+      document.getElementById('admin-panel').style.display = '';
+      renderAdminPanel();
+    } else {
+      document.getElementById('pw-error').style.display = '';
+    }
+  };
+
+  function renderAdminPanel() {
+    document.getElementById('count').textContent = signups.length;
+    const list = document.getElementById('entries-list');
+    if (!signups.length) { list.innerHTML = '<div class="empty">No signups yet.</div>'; return; }
+    const sorted = [...signups].sort((a,b) => a.ts - b.ts);
+    list.innerHTML = sorted.map(s => `
+      <div class="entry-row">
+        <div class="entry-info">
+          <span class="entry-name">${s.gamertag} <span class="entry-god">— ${s.god}</span></span>
+          <span class="entry-meta">
+            <span>Age ${s.age}</span>
+            ${s.phone ? `<span>${s.phone}</span>` : ''}
+          </span>
+        </div>
+        <button class="btn-sm" onclick="window._removeEntry('${s.id}')">Remove</button>
+      </div>
+    `).join('');
+  }
+
+  window._removeEntry = async function(id) {
+    await deleteDoc(doc(db, 'signups', id));
+  };
+
+  window.clearAll = async function() {
+    if (!confirm('Clear all signups? This cannot be undone.')) return;
+    const snap = await getDocs(signupsCol);
+    await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
+  };
+</script>
+</body>
+</html>
