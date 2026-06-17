@@ -346,6 +346,10 @@
       <label>Phone number <span class="optional">(optional)</span></label>
       <input type="tel" id="phone" placeholder="e.g. 555-867-5309">
     </div>
+    <div class="field">
+      <label>Email <span style="color:var(--danger)">*</span></label>
+      <input type="email" id="email" placeholder="you@example.com">
+    </div>
     <div class="god-section-label">Choose your god <span style="color:var(--danger)">*</span></div>
     <div class="god-grid" id="god-grid">
       <div class="loading">Loading gods...</div>
@@ -427,10 +431,12 @@
     const gamertag = document.getElementById('gamertag').value.trim();
     const age = document.getElementById('age').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
     const btn = document.getElementById('submit-btn');
 
     if (!gamertag) { showAlert('danger', 'Please enter your gamertag.'); return; }
     if (!age || isNaN(age) || +age < 1) { showAlert('danger', 'Please enter a valid age.'); return; }
+    if (!email || !email.includes('@')) { showAlert('danger', 'Please enter a valid email address.'); return; }
     if (!selectedGod) { showAlert('danger', 'Please choose a god.'); return; }
     if (takenGods().includes(selectedGod)) { showAlert('danger', 'That god was just taken! Pick another.'); selectedGod = null; renderGods(); return; }
 
@@ -444,6 +450,7 @@
         gamertag_lower: gamertag.toLowerCase(),
         age: +age,
         phone: phone || null,
+        email,
         god: selectedGod,
         ts: Date.now()
       });
@@ -452,6 +459,7 @@
       document.getElementById('gamertag').value = '';
       document.getElementById('age').value = '';
       document.getElementById('phone').value = '';
+      document.getElementById('email').value = '';
       showAlert('success', `Welcome to the Realm, ${gamertag}! You claimed ${claimedGod}.`);
     } catch(e) {
       showAlert('danger', 'Something went wrong. Please try again.');
@@ -496,6 +504,7 @@
           <span class="entry-meta">
             <span>Age ${s.age}</span>
             ${s.phone ? `<span>${s.phone}</span>` : ''}
+            ${s.email ? `<span>${s.email}</span>` : ''}
           </span>
         </div>
         <button class="btn-sm" onclick="window._removeEntry('${s.id}')">Remove</button>
