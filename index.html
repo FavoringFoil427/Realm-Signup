@@ -541,10 +541,14 @@
   }
 
   window._removeEntry = async function(id) {
+    const pw = prompt('Enter admin password to remove this entry:');
+    if (pw !== ADMIN_PASSWORD) { alert('Wrong password.'); return; }
     await deleteDoc(doc(db, 'signups', id));
   };
 
   window.clearAll = async function() {
+    const pw = prompt('Enter admin password to clear all signups:');
+    if (pw !== ADMIN_PASSWORD) { alert('Wrong password.'); return; }
     if (!confirm('Clear all signups? This cannot be undone.')) return;
     const snap = await getDocs(signupsCol);
     await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
