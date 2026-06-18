@@ -461,6 +461,16 @@
     const existing = await getDocs(query(signupsCol, where('gamertag_lower', '==', gamertag.toLowerCase())));
     if (!existing.empty) { showAlert('danger', 'That gamertag is already signed up.'); return; }
 
+    if (email) {
+      const emailCheck = await getDocs(query(signupsCol, where('email', '==', email.toLowerCase())));
+      if (!emailCheck.empty) { showAlert('danger', 'That email address is already signed up.'); return; }
+    }
+
+    if (phone) {
+      const phoneCheck = await getDocs(query(signupsCol, where('phone', '==', phone)));
+      if (!phoneCheck.empty) { showAlert('danger', 'That phone number is already signed up.'); return; }
+    }
+
     btn.disabled = true;
     try {
       await addDoc(signupsCol, {
@@ -468,7 +478,7 @@
         gamertag_lower: gamertag.toLowerCase(),
         age: +age,
         phone: phone || null,
-        email,
+        email: email ? email.toLowerCase() : null,
         god: selectedGod,
         ts: Date.now()
       });
