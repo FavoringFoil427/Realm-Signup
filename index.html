@@ -343,12 +343,12 @@
       <input type="number" id="age" placeholder="e.g. 17" min="1" max="99">
     </div>
     <div class="field">
-      <label>Email <span style="color:var(--danger)">*</span></label>
-      <input type="email" id="email" placeholder="you@example.com">
+      <label>Email <span id="email-required" style="color:var(--danger)">*</span> <span class="optional">(pick email or phone number as a contact method)</span></label>
+      <input type="email" id="email" placeholder="you@example.com" oninput="updateContactLabels()">
     </div>
     <div class="field">
-      <label>Phone number <span class="optional">(optional, in case you want to add another method of contact)</span></label>
-      <input type="tel" id="phone" placeholder="e.g. 555-867-5309">
+      <label>Phone number <span id="phone-required" style="color:var(--danger)">*</span> <span class="optional">(pick email or phone number as a contact method)</span></label>
+      <input type="tel" id="phone" placeholder="e.g. 555-867-5309" oninput="updateContactLabels()">
     </div>
     <div class="god-section-label">Choose your god <span style="color:var(--danger)">*</span></div>
     <div class="god-grid" id="god-grid">
@@ -421,6 +421,23 @@
     }).join('');
   }
 
+  window.updateContactLabels = function() {
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const emailReq = document.getElementById('email-required');
+    const phoneReq = document.getElementById('phone-required');
+    const phoneLabel = document.querySelector('#phone ~ span.optional') || document.querySelector('label[for="phone"] .optional');
+
+    if (email) {
+      phoneReq.style.display = 'none';
+    } else if (phone) {
+      emailReq.style.display = 'none';
+    } else {
+      emailReq.style.display = '';
+      phoneReq.style.display = '';
+    }
+  };
+
   window._selectGod = function(god) {
     if (takenGods().includes(god)) return;
     selectedGod = (selectedGod === god) ? null : god;
@@ -436,7 +453,8 @@
 
     if (!gamertag) { showAlert('danger', 'Please enter your gamertag.'); return; }
     if (!age || isNaN(age) || +age < 1) { showAlert('danger', 'Please enter a valid age.'); return; }
-    if (!email || !email.includes('@')) { showAlert('danger', 'Please enter a valid email address.'); return; }
+    if (!email && !phone) { showAlert('danger', 'Please enter at least an email or phone number.'); return; }
+    if (email && !email.includes('@')) { showAlert('danger', 'Please enter a valid email address.'); return; }
     if (!selectedGod) { showAlert('danger', 'Please choose a god.'); return; }
     if (takenGods().includes(selectedGod)) { showAlert('danger', 'That god was just taken! Pick another.'); selectedGod = null; renderGods(); return; }
 
