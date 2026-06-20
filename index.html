@@ -155,8 +155,7 @@
     background: var(--surface);
     transition: border-color 0.15s, background 0.15s;
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
     font-size: 14px;
     color: var(--text);
     user-select: none;
@@ -390,7 +389,29 @@
   };
 
   const ADMIN_PASSWORD = 'Redpirate427';
-  const GODS = ['Zeus','Hera','Poseidon','Demeter','Athena','Apollo','Artemis','Ares','Aphrodite','Hephaestus','Hermes','Dionysus','Hades','Hypnos','Hecate','Nemesis','Nike','Iris','Morpheus'];
+  const GODS = ['Zeus','Hera','Poseidon','Demeter','Athena','Apollo','Artemis','Ares','Aphrodite','Hephaestus','Hermes','Dionysus','Hades','Hypnos','Hecate','Nemesis','Nike','Iris','Morpheus','Tyche'];
+  const GOD_DESCS = {
+    'Zeus':      'Has a maxed out netherite spear, Speed and Strength.',
+    'Hera':      '1 golden apple every 30 sec, 1 enchanted golden apple every 5 min.',
+    'Poseidon':  '2 tridents — one maxed with Loyalty, another maxed with Riptide.',
+    'Demeter':   'Resistance 3 and makes plants grow faster.',
+    'Athena':    'Athena's helm grants Resistance 3.',
+    'Apollo':    'Bow with Infinite, Instant Harming, Speed, Regen, and Strength.',
+    'Artemis':   'Speed, Regen, Strength, and a crossbow.',
+    'Ares':      'Maxed out netherite sword with Strength.',
+    'Aphrodite': 'Regen, Speed, and Resistance 1.',
+    'Hephaestus':'A mace that grants Jump Boost when held.',
+    'Hermes':    'Elytra with 1 rocket every 30 sec.',
+    'Dionysus':  'Makes crops grow 3x faster in a 20 block radius and grants Regen.',
+    'Hades':     'A netherite sword that grants Speed and Invisibility when held.',
+    'Hypnos':    'A netherite sword that inflicts Slowness 2, permanent Night Vision and Strength 2.',
+    'Hecate':    'Netherite sword with Strength 2, Night Vision, Speed 2, and Fire Resistance.',
+    'Nemesis':   'A netherite sword that eliminates all effects on any player in a 20 block radius when held.',
+    'Nike':      'Gains Speed, Strength, and Regen.',
+    'Iris':      'Gains Speed, Jump Boost, and Resistance.',
+    'Morpheus':  'Feather of Speed 2 and Slow Falling.',
+    'Tyche':     '5 absorption hearts every 30 seconds, Resistance, and Speed.',
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -417,7 +438,15 @@
       let cls = 'god-card';
       if (isTaken) cls += ' taken';
       else if (isSelected) cls += ' selected';
-      return `<div class="${cls}" onclick="window._selectGod('${g}')"><span class="god-dot"></span>${g}</div>`;
+      const desc = GOD_DESCS[g] || '';
+      return `<div class="${cls}" onclick="window._selectGod('${g}')">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:${desc?'4px':'0'}">
+          <span class="god-dot"></span>
+          <span style="font-weight:600;font-size:14px;">${g}</span>
+          ${isTaken ? '<span style="font-size:10px;margin-left:auto;">(taken)</span>' : ''}
+        </div>
+        ${desc ? `<div style="font-size:11px;color:var(--muted);line-height:1.4;">${desc}</div>` : ''}
+      </div>`;
     }).join('');
   }
 
